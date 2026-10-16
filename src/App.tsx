@@ -26,7 +26,7 @@ interface MusicAlbumProps {
   songs: Song[];
 }
 
-function Book(props : BookProps) {
+function Book(props: BookProps) {
   const { imageUrl, title, year, pages } = props;
 
   return (
@@ -39,7 +39,7 @@ function Book(props : BookProps) {
   );
 }
 
-function Movie(props : MovieProps) {
+function Movie(props: MovieProps) {
   const { imageUrl, title, year, director } = props;
 
   return (
@@ -75,7 +75,7 @@ function MusicAlbum(props: MusicAlbumProps) {
           <ul style={{ paddingLeft: "15px", margin: 0 }}>
           {songs.map((song, index) => (
             <li key={index} style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
-              <span>{song.title}</span>
+              <span>{index + 1}. {song.title}</span>
               <span>{song.duration}</span>
             </li>
           ))}
@@ -86,93 +86,129 @@ function MusicAlbum(props: MusicAlbumProps) {
 }
 
 function App() {
+  const movies: MovieProps[] = [
+    {
+      imageUrl: "minionki.jpg",
+      title: "Minionki",
+      year: 2015,
+      director: "Kyle Balda, Pierre Coffin"
+    },
+    {
+      imageUrl: "minecraft.jpg",
+      title: "Minecraft: Film",
+      year: 2025,
+      director: "Jared Hess"
+    },
+    {
+      imageUrl: "shrek.jpg",
+      title: "Shrek",
+      year: 2001,
+      director: "Andrew Adamson, Vicky Jenson"
+    }
+  ];
+
+  const books: BookProps[] = [
+    {
+      imageUrl: "ZbrodniaKara.jpg",
+      title: "Zbrodnia i kara",
+      year: 1866,
+      pages: 416
+    },
+    {
+      imageUrl: "PanTadeusz.jpg",
+      title: "Pan Tadeusz",
+      year: 1834,
+      pages: 340
+    },
+    {
+      imageUrl: "Potop.jpg",
+      title: "Potop",
+      year: 1886,
+      pages: 930
+    }
+  ];
+
+  const albums: MusicAlbumProps[] = [
+    {
+      imageUrl: "FF.jpg",
+      albumName: "FF",
+      bandName: "Młody West",
+      genre: "Hip-Hop / Rap",
+      year: 2026,
+      songs: [
+        { title: "Rozdział 1(INTRO)", duration: "2:45" },
+        { title: "Bezsens", duration: "2.35" },
+        { title: "Jak zawsze", duration: "2:18" },
+        { title: "Jestem w piekle", duration: "4:18" },
+        { title: "prezydent", duration: "3:22" },
+        { title: "Bez promo", duration: "4:10" },
+        { title: "100 Tysiecy", duration: "1:56" },
+        { title: "KLT INTERLUDE", duration: "2:13" },
+        { title: "KULT", duration: "3:15" }
+      ]
+    },
+    {
+      imageUrl: "Von.jpg",
+      albumName: "Welcom to O'Block",
+      bandName: "King Von",
+      genre: "Rap",
+      year: 2020,
+      songs: [
+        { title: "Armed & Dangerous", duration: "2:45" },
+        { title: "GTA", duration: "2.35" },
+        { title: "Demon", duration: "2:18" },
+        { title: "Mine Too", duration: "2:18" },
+        { title: "The Code", duration: "4:22" },
+        { title: "Why He Told", duration: "2:10" },
+        { title: "Back Again", duration: "2:56" },
+        { title: "Gleesh Place", duration: "2:43" },
+        { title: "All These Niggas", duration: "2:15" },
+        { title: "Can't Relate", duration: "2:15" },
+        { title: "Mad at You", duration: "3:15" }
+      ]
+    }
+  ];
+
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-        <Movie 
-            imageUrl="minionki.jpg" 
-            title="Minionki" 
-            year={2015}
-            director="Kyle Balda, Pierre Coffin" 
+        {movies.map((movie, index) => (
+          <Movie 
+            key={index}
+            imageUrl={movie.imageUrl} 
+            title={movie.title} 
+            year={movie.year}
+            director={movie.director} 
           />
-        <Movie 
-            imageUrl="minecraft.jpg"
-            title="Minecraft: Film"
-            year={2025}
-            director="Jared Hess"
-        />
-        <Movie 
-            imageUrl="shrek.jpg"
-            title="Shrek"
-            year={2001}
-            director="Andrew Adamson, Vicky Jenson"
-          />
+        ))}
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-        <Book 
-            imageUrl="ZbrodniaKara.jpg"
-            title="Zbrodnia i kara"
-            year={1866}
-            pages={416}
+        {books.map((book, index) => (
+          <Book 
+            key={index}
+            imageUrl={book.imageUrl}
+            title={book.title}
+            year={book.year}
+            pages={book.pages}
           />
-        <Book 
-            imageUrl="PanTadeusz.jpg"
-            title="Pan Tadeusz"
-            year={1834}
-            pages={340}
-          />
-        <Book 
-            imageUrl="Potop.jpg"
-            title="Potop"
-            year={1886}
-            pages={930}
-          />
+        ))}
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-            <MusicAlbum 
-              imageUrl="FF.jpg"
-              albumName="FF"
-              bandName="Młody West"
-              genre="Hip-Hop / Rap"
-              year={2026}
-              songs={[
-                { title: "Rozdział 1(INTRO)", duration: "2:45" },
-                { title: "Bezsens", duration: "2.35" },
-                { title: "Jak zawsze", duration: "2:18" },
-                { title: "Jestem w piekle", duration: "4:18" },
-                { title: "prezydent", duration: "3:22" },
-                { title: "Bez promo", duration: "4:10" },
-                { title: "100 Tysiecy", duration: "1:56" },
-                { title: "KLT INTERLUDE", duration: "2:13" },
-                { title: "KULT", duration: "3:15" }
-              ]}
-            />
-      
-            <MusicAlbum 
-              imageUrl="Von.jpg"
-              albumName="Welcom to O'Block"
-              bandName="King Von"
-              genre="Rap"
-              year={2020}
-              songs={[
-                { title: "Armed & Dangerous", duration: "2:45" },
-                { title: "GTA", duration: "2.35" },
-                { title: "Demon", duration: "2:18" },
-                { title: "Mine Too", duration: "2:18" },
-                { title: "The Code", duration: "4:22" },
-                { title: "Why He Told", duration: "2:10" },
-                { title: "Back Again", duration: "2:56" },
-                { title: "Gleesh Place", duration: "2:43" },
-                { title: "All These Niggas", duration: "2:15" },
-                { title: "Can't Relate", duration: "2:15" },
-                { title: "Mad at You", duration: "3:15" }
-              ]}
-            />
+        {albums.map((album, index) => (
+          <MusicAlbum 
+            key={index}
+            imageUrl={album.imageUrl}
+            albumName={album.albumName}
+            bandName={album.bandName}
+            genre={album.genre}
+            year={album.year}
+            songs={album.songs}
+          />
+        ))}
       </div>
     </div>
-  
   );
 }
 
