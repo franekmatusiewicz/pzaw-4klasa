@@ -10,6 +10,7 @@ interface MovieProps {
   title: string;
   year: number;
   director: string;
+  rating: number;
 }
 
 interface Song {
@@ -26,44 +27,41 @@ interface MusicAlbumProps {
   songs: Song[];
 }
 
-function Book(props: BookProps) {
-  const { imageUrl, title, year, pages } = props;
-
+function Book({ imageUrl, title, year, pages }: BookProps) {
   return (
     <div style={{ textAlign: "center", width: "180px" }}>
-      <img src={imageUrl} alt={title} style={{ width: "150px", height: "220px"}} />
+      <img src={imageUrl} alt={title} style={{ width: "150px", height: "220px" }} />
       <h3>{title}</h3>
       <p>Rok wydania: {year}</p>
       <p>Liczba stron: {pages}</p>
+      {year < 2000 && <p>Klasyka</p>}
     </div>
   );
 }
 
-function Movie(props: MovieProps) {
-  const { imageUrl, title, year, director } = props;
-
+function Movie({ imageUrl, title, year, director, rating }: MovieProps) {
   return (
     <div style={{ textAlign: "center", width: "180px" }}>
-      <img src={imageUrl} alt={title} style={{ width: "150px", height: "220px"}} />
+      <img src={imageUrl} alt={title} style={{ width: "150px", height: "220px" }} />
       <h3>{title}</h3>
       <p>Rok premiery: {year}</p>
       <p>Reżyser: {director}</p>
+      <p>Ocena: {rating}/10</p>
+      {rating >= 8 && <p>Polecany</p>}
     </div>
   );
 }
 
-function MusicAlbum(props: MusicAlbumProps) {
-  const { imageUrl, albumName, bandName, genre, year, songs } = props;
-
+function MusicAlbum({ imageUrl, albumName, bandName, genre, year, songs }: MusicAlbumProps) {
   return (
-    <div style={{ 
-      textAlign: "center", 
-      width: "240px", 
-      border: "1px solid #ccc", 
-      borderRadius: "8px", 
-      padding: "15px", 
+    <div style={{
+      textAlign: "center",
+      width: "240px",
+      border: "1px solid #ccc",
+      borderRadius: "8px",
+      padding: "15px",
       boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-      backgroundColor: "#fff"
+      backgroundColor: "#fff",
     }}>
       <img src={imageUrl} alt={albumName} style={{ width: "150px", height: "150px", objectFit: "cover", borderRadius: "4px" }} />
       <h3>{albumName}</h3>
@@ -71,15 +69,19 @@ function MusicAlbum(props: MusicAlbumProps) {
       <p>Gatunek: {genre}</p>
       <p>Rok: {year}</p>
       <div style={{ textAlign: "left", borderTop: "1px solid #ffffff", paddingTop: "8px" }}>
-          <p style={{ fontWeight: "bold", textAlign: "center" }}>Lista piosenek:</p>
+        <p style={{ fontWeight: "bold", textAlign: "center" }}>Lista piosenek:</p>
+        {songs.length === 0 ? (
+          <p>Brak utworów</p>
+        ) : (
           <ul style={{ paddingLeft: "15px", margin: 0 }}>
-          {songs.map((song, index) => (
-            <li key={index} style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
-              <span>{index + 1}. {song.title}</span>
-              <span>{song.duration}</span>
-            </li>
-          ))}
-        </ul>
+            {songs.map((song, index) => (
+              <li key={index} style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
+                <span>{index + 1}. {song.title}</span>
+                <span>{song.duration}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
@@ -91,20 +93,30 @@ function App() {
       imageUrl: "minionki.jpg",
       title: "Minionki",
       year: 2015,
-      director: "Kyle Balda, Pierre Coffin"
+      director: "Kyle Balda, Pierre Coffin",
+      rating: 8
     },
     {
       imageUrl: "minecraft.jpg",
       title: "Minecraft: Film",
       year: 2025,
-      director: "Jared Hess"
+      director: "Jared Hess",
+      rating: 7
     },
     {
       imageUrl: "shrek.jpg",
       title: "Shrek",
       year: 2001,
-      director: "Andrew Adamson, Vicky Jenson"
-    }
+      director: "Andrew Adamson, Vicky Jenson",
+      rating: 9
+    },
+    {
+      imageUrl: "toyistory.webp",
+      title: "Toy Story",
+      year: 1995,
+      director: "John Lasseter",
+      rating: 8
+    },
   ];
 
   const books: BookProps[] = [
@@ -169,24 +181,57 @@ function App() {
     }
   ];
 
+  const sortedMovies = [...movies].sort((firstMovie, secondMovie) => {
+    if (firstMovie.title < secondMovie.title) {
+      return -1;
+    }
+    if (firstMovie.title > secondMovie.title) {
+      return 1;
+    }
+    return 0;
+  });
+  const recentMovies = movies.filter((movie) => movie.year > 2010);
+  const sortedBooks = [...books].sort((firstBook, secondBook) => {
+    if (firstBook.title < secondBook.title) {
+      return -1;
+    }
+    if (firstBook.title > secondBook.title) {
+      return 1;
+    }
+    return 0;
+  });
+  const newestBooks = [...books].sort((a, b) => b.year - a.year);
+  const sortedAlbums = [...albums].sort((firstAlbum, secondAlbum) => {
+    if (firstAlbum.albumName < secondAlbum.albumName) {
+      return -1;
+    }
+    if (firstAlbum.albumName > secondAlbum.albumName) {
+      return 1;
+    }
+    return 0;
+  });
+  const albumsBySongCount = [...albums].sort((a, b) => b.songs.length - a.songs.length);
+  const albumWithMostSongs = albumsBySongCount[0];
+
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-        {movies.map((movie, index) => (
-          <Movie 
-            key={index}
-            imageUrl={movie.imageUrl} 
-            title={movie.title} 
+        {sortedMovies.map((movie) => (
+          <Movie
+            key={movie.title}
+            imageUrl={movie.imageUrl}
+            title={movie.title}
             year={movie.year}
-            director={movie.director} 
+            director={movie.director}
+            rating={movie.rating}
           />
         ))}
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-        {books.map((book, index) => (
-          <Book 
-            key={index}
+        {sortedBooks.map((book) => (
+          <Book
+            key={book.title}
             imageUrl={book.imageUrl}
             title={book.title}
             year={book.year}
@@ -196,9 +241,9 @@ function App() {
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-        {albums.map((album, index) => (
-          <MusicAlbum 
-            key={index}
+        {sortedAlbums.map((album) => (
+          <MusicAlbum
+            key={album.albumName}
             imageUrl={album.imageUrl}
             albumName={album.albumName}
             bandName={album.bandName}
@@ -207,6 +252,45 @@ function App() {
             songs={album.songs}
           />
         ))}
+      </div>
+
+      <h2>Filmy wydane po 2010 roku</h2>
+      <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
+        {recentMovies.map((movie) => (
+          <Movie
+            key={movie.title}
+            imageUrl={movie.imageUrl}
+            title={movie.title}
+            year={movie.year}
+            director={movie.director}
+            rating={movie.rating}
+          />
+        ))}
+      </div>
+
+      <h2>Książki od najnowszej</h2>
+      <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
+        {newestBooks.map((book) => (
+          <Book
+            key={book.title}
+            imageUrl={book.imageUrl}
+            title={book.title}
+            year={book.year}
+            pages={book.pages}
+          />
+        ))}
+      </div>
+
+      <h2>Album z największą liczbą utworów</h2>
+      <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
+        <MusicAlbum
+          imageUrl={albumWithMostSongs.imageUrl}
+          albumName={albumWithMostSongs.albumName}
+          bandName={albumWithMostSongs.bandName}
+          genre={albumWithMostSongs.genre}
+          year={albumWithMostSongs.year}
+          songs={albumWithMostSongs.songs}
+        />
       </div>
     </div>
   );
