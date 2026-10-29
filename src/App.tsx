@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 interface BookProps {
   imageUrl: string;
   title: string;
@@ -41,18 +43,43 @@ function Book({ imageUrl, title, year, pages }: BookProps) {
 
 function Movie({ imageUrl, title, year, director, rating }: MovieProps) {
   return (
-    <div style={{ textAlign: "center", width: "180px" }}>
+    <div
+      onClick={() => console.log(`Wybrano film: ${title}`)}
+      style={{
+        textAlign: "center",
+        width: "180px",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        padding: "10px",
+        cursor: "pointer",
+      }}
+    >
       <img src={imageUrl} alt={title} style={{ width: "150px", height: "220px" }} />
-      <h3>{title}</h3>
-      <p>Rok premiery: {year}</p>
-      <p>Reżyser: {director}</p>
-      <p>Ocena: {rating}/10</p>
-      {rating >= 8 && <p>Polecany</p>}
+      <div className="card-body">
+        <h3>{title}</h3>
+        <p>Rok premiery: {year}</p>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            console.log(`Pokaż szczegóły dla ${title}`);
+          }}
+        >
+          Pokaż szczegóły
+        </button>
+        <p>Reżyser: {director}</p>
+        <p>Ocena: {rating}/10</p>
+        {rating >= 8 && <p>Polecany</p>}
+      </div>
     </div>
   );
 }
 
 function MusicAlbum({ imageUrl, albumName, bandName, genre, year, songs }: MusicAlbumProps) {
+  function handleSongClick(songTitle: string) {
+    console.log(`Wybrano utwór: ${songTitle} z ${albumName}`);
+  }
+
   return (
     <div style={{
       textAlign: "center",
@@ -75,7 +102,11 @@ function MusicAlbum({ imageUrl, albumName, bandName, genre, year, songs }: Music
         ) : (
           <ul style={{ paddingLeft: "15px", margin: 0 }}>
             {songs.map((song, index) => (
-              <li key={index} style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
+              <li
+                key={index}
+                onClick={() => handleSongClick(song.title)}
+                style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px", cursor: "pointer" }}
+              >
                 <span>{index + 1}. {song.title}</span>
                 <span>{song.duration}</span>
               </li>
@@ -88,6 +119,10 @@ function MusicAlbum({ imageUrl, albumName, bandName, genre, year, songs }: Music
 }
 
 function App() {
+  const [movieSearch, setMovieSearch] = useState("");
+  const [bookSearch, setBookSearch] = useState("");
+  const [albumSearch, setAlbumSearch] = useState("");
+
   const movies: MovieProps[] = [
     {
       imageUrl: "minionki.jpg",
@@ -190,6 +225,9 @@ function App() {
     }
     return 0;
   });
+  const filteredMovies = sortedMovies.filter((movie) =>
+    movie.title.toLowerCase().includes(movieSearch.toLowerCase())
+  );
   const recentMovies = movies.filter((movie) => movie.year > 2010);
   const sortedBooks = [...books].sort((firstBook, secondBook) => {
     if (firstBook.title < secondBook.title) {
@@ -200,6 +238,9 @@ function App() {
     }
     return 0;
   });
+  const filteredBooks = sortedBooks.filter((book) =>
+    book.title.toLowerCase().includes(bookSearch.toLowerCase())
+  );
   const newestBooks = [...books].sort((a, b) => b.year - a.year);
   const sortedAlbums = [...albums].sort((firstAlbum, secondAlbum) => {
     if (firstAlbum.albumName < secondAlbum.albumName) {
@@ -210,48 +251,99 @@ function App() {
     }
     return 0;
   });
+  const filteredAlbums = sortedAlbums.filter((album) =>
+    album.albumName.toLowerCase().includes(albumSearch.toLowerCase())
+  );
   const albumsBySongCount = [...albums].sort((a, b) => b.songs.length - a.songs.length);
   const albumWithMostSongs = albumsBySongCount[0];
 
   return (
     <div>
+      <h2>Filmy</h2>
+      <input
+        type="text"
+        className="form-control"
+        id="movie-search"
+        placeholder="Wpisz tytuł"
+        onChange={(event) => {
+          setMovieSearch(event.target.value);
+          console.log(event.target.value);
+        }}
+      />
+      <p>Wpisany tekst: {movieSearch}</p>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-        {sortedMovies.map((movie) => (
-          <Movie
-            key={movie.title}
-            imageUrl={movie.imageUrl}
-            title={movie.title}
-            year={movie.year}
-            director={movie.director}
-            rating={movie.rating}
-          />
-        ))}
+        {filteredMovies.length > 0 ? (
+          filteredMovies.map((movie) => (
+            <Movie
+              key={movie.title}
+              imageUrl={movie.imageUrl}
+              title={movie.title}
+              year={movie.year}
+              director={movie.director}
+              rating={movie.rating}
+            />
+          ))
+        ) : (
+          <p>Nie znaleziono filmów</p>
+        )}
       </div>
 
+      <h2>Książki</h2>
+      <input
+        type="text"
+        className="form-control"
+        id="book-search"
+        placeholder="Wpisz tytuł"
+        onChange={(event) => {
+          setBookSearch(event.target.value);
+          console.log(event.target.value);
+        }}
+      />
+      <p>Wpisany tekst: {bookSearch}</p>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-        {sortedBooks.map((book) => (
-          <Book
-            key={book.title}
-            imageUrl={book.imageUrl}
-            title={book.title}
-            year={book.year}
-            pages={book.pages}
-          />
-        ))}
+        {filteredBooks.length > 0 ? (
+          filteredBooks.map((book) => (
+            <Book
+              key={book.title}
+              imageUrl={book.imageUrl}
+              title={book.title}
+              year={book.year}
+              pages={book.pages}
+            />
+          ))
+        ) : (
+          <p>Nie znaleziono książek</p>
+        )}
       </div>
 
+      <h2>Albumy</h2>
+      <input
+        type="text"
+        className="form-control"
+        id="album-search"
+        placeholder="Wpisz tytuł"
+        onChange={(event) => {
+          setAlbumSearch(event.target.value);
+          console.log(event.target.value);
+        }}
+      />
+      <p>Wpisany tekst: {albumSearch}</p>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", padding: "20px", flexWrap: "wrap" }}>
-        {sortedAlbums.map((album) => (
-          <MusicAlbum
-            key={album.albumName}
-            imageUrl={album.imageUrl}
-            albumName={album.albumName}
-            bandName={album.bandName}
-            genre={album.genre}
-            year={album.year}
-            songs={album.songs}
-          />
-        ))}
+        {filteredAlbums.length > 0 ? (
+          filteredAlbums.map((album) => (
+            <MusicAlbum
+              key={album.albumName}
+              imageUrl={album.imageUrl}
+              albumName={album.albumName}
+              bandName={album.bandName}
+              genre={album.genre}
+              year={album.year}
+              songs={album.songs}
+            />
+          ))
+        ) : (
+          <p>Nie znaleziono albumów</p>
+        )}
       </div>
 
       <h2>Filmy wydane po 2010 roku</h2>
